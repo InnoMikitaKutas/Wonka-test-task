@@ -1,0 +1,23 @@
+_private/
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+.pnpm-store/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Env & local
+.env
+.env.*
+*.local
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

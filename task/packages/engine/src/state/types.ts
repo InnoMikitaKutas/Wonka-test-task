@@ -15,7 +15,16 @@ export interface Slot {
   scheduledCandidateId: string | null;
 }
 
+export interface Reservation {
+  id: string;
+  slotId: string;
+  candidateId: string;
+  status: 'pending' | 'confirmed' | 'expired';
+  expiresAt: string;
+}
+
 export interface State {
   candidates: Record<string, Candidate>;
   slots: Record<string, Slot>;
+  reservations: Record<string, Reservation>;
 }

@@ -80,7 +80,7 @@ describe('determinism', () => {
 
   it('reduce never mutates the state it is given', () => {
     const start = initialState();
-    const snapshotBeforeFold = { candidates: {}, slots: {} };
+    const snapshotBeforeFold = { candidates: {}, slots: {}, reservations: {} };
     expect(start).toEqual(snapshotBeforeFold);
 
     let state = start;

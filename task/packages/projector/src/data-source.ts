@@ -7,6 +7,8 @@ import {
   ProjectorStateRepository,
   SlotReadModelEntity,
   SlotReadModelRepository,
+  ReservationReadModelEntity,
+  ReservationReadModelRepository,
   createDataSource,
 } from '@ats/persistence';
 import type { ProjectorDeps } from './projector';
@@ -41,6 +43,9 @@ export async function bootstrap(url?: string): Promise<Bootstrapped> {
     ),
     slotReadModel: new SlotReadModelRepository(
       dataSource.getRepository(SlotReadModelEntity),
+    ),
+    reservationReadModel: new ReservationReadModelRepository(
+      dataSource.getRepository(ReservationReadModelEntity),
     ),
     projectorState: new ProjectorStateRepository(
       dataSource.getRepository(ProjectorStateEntity),

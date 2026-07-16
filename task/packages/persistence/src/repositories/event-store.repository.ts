@@ -103,6 +103,14 @@ export class EventStoreRepository {
     return rows.map(toStoredEvent);
   }
 
+  async loadAll(): Promise<StoredEvent[]> {
+    const rows = await this.repo
+      .createQueryBuilder('e')
+      .orderBy('e.globalSeq', 'ASC')
+      .getMany();
+    return rows.map(toStoredEvent);
+  }
+
   async readAfter(afterSeq: string, limit: number): Promise<StoredEvent[]> {
     const rows = await this.repo
       .createQueryBuilder('e')

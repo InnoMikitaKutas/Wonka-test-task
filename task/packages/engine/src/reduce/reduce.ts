@@ -6,6 +6,9 @@ import type {
   ScoreAssigned,
   SlotOpened,
   StageChanged,
+  ReservationPlaced,
+  ReservationConfirmed,
+  ReservationExpired,
 } from '@ats/contracts';
 import { DomainError } from '../errors';
 import type { State } from '../state';
@@ -88,6 +91,44 @@ export function reduce(state: State, envelope: EventEnvelope): State {
         slots: {
           ...state.slots,
           [p.slotId]: { ...slot, scheduledCandidateId: p.candidateId },
+        },
+      };
+    }
+    case 'ReservationPlaced': {
+      const p = envelope.payload as ReservationPlaced;
+      return {
+        ...state,
+        reservations: {
+          ...state.reservations,
+          [p.reservationId]: {
+            id: p.reservationId,
+            slotId: p.slotId,
+            candidateId: p.candidateId,
+            status: 'pending',
+            expiresAt: p.expiresAt,
+          },
+        },
+      };
+    }
+    case 'ReservationConfirmed': {
+      const p = envelope.payload as ReservationConfirmed;
+      const reservation = state.reservations[p.reservationId];
+      return {
+        ...state,
+        reservations: {
+          ...state.reservations,
+          [p.reservationId]: { ...reservation, status: 'confirmed' },
+        },
+      };
+    }
+    case 'ReservationExpired': {
+      const p = envelope.payload as ReservationExpired;
+      const reservation = state.reservations[p.reservationId];
+      return {
+        ...state,
+        reservations: {
+          ...state.reservations,
+          [p.reservationId]: { ...reservation, status: 'expired' },
         },
       };
     }

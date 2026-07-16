@@ -38,3 +38,15 @@ export const ScheduleInterviewPayload = z.object({
   slotId: z.string(),
   candidateId: z.string(),
 });
+
+export const ReserveSlotPayload = z.object({
+  reservationId: z.string(),
+  slotId: z.string(),
+  candidateId: z.string(),
+});
+
+export const ConfirmReservationPayload = z.object({
+  reservationId: z.string(),
+});
+
+export const SweepPayload = z.object({});

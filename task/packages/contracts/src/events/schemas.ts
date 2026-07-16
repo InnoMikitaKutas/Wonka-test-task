@@ -38,6 +38,23 @@ export const InterviewScheduledPayload = z.object({
   candidateId: z.string(),
 });
 
+export const ReservationPlacedPayload = z.object({
+  reservationId: z.string(),
+  slotId: z.string(),
+  candidateId: z.string(),
+  expiresAt: z.string().datetime(),
+});
+
+export const ReservationConfirmedPayload = z.object({
+  reservationId: z.string(),
+  slotId: z.string(),
+});
+
+export const ReservationExpiredPayload = z.object({
+  reservationId: z.string(),
+  slotId: z.string(),
+});
+
 export const V1Event = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('ApplicationReceived'),

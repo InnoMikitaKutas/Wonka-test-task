@@ -6,6 +6,9 @@ import {
   OpenSlotPayload,
   ScheduleInterviewPayload,
   SubmitApplicationPayload,
+  ReserveSlotPayload,
+  ConfirmReservationPayload,
+  SweepPayload,
 } from '@ats/contracts';
 import { DomainError } from '../errors';
 import type { State } from '../state';
@@ -91,6 +94,65 @@ export function decide(state: State, command: CommandEnvelope): EventDraft[] {
         throw new DomainError('VALIDATION', 'candidate must be at the interview stage (3) or later');
       }
       return [{ type: 'InterviewScheduled', stream: `slot-${p.slotId}`, payload: p }];
+    }
+    case 'ReserveSlot': {
+      const p = ReserveSlotPayload.parse(command.payload);
+      const now = Date.parse(command.occurredAt);
+      const held = Object.values(state.reservations).some(
+        (reservation) =>
+          reservation.slotId === p.slotId &&
+          (reservation.status === 'confirmed' ||
+            (reservation.status === 'pending' && now <= Date.parse(reservation.expiresAt))),
+      );
+      if (held) {
+        throw new DomainError('CONFLICT', `slot ${p.slotId} is already reserved`);
+      }
+      const expiresAt = new globalThis.Date(now + 24 * 60 * 60 * 1000).toISOString();
+      return [
+        {
+          type: 'ReservationPlaced',
+          stream: `reservation-${p.reservationId}`,
+          payload: { ...p, expiresAt },
+        },
+      ];
+    }
+    case 'ConfirmReservation': {
+      const p = ConfirmReservationPayload.parse(command.payload);
+      const reservation = state.reservations[p.reservationId];
+      if (!reservation) {
+        throw new DomainError('NOT_FOUND', `reservation ${p.reservationId} not found`);
+      }
+      if (reservation.status === 'expired') {
+        throw new DomainError('GONE', `reservation ${p.reservationId} has expired`);
+      }
+      if (reservation.status === 'confirmed') {
+        throw new DomainError('CONFLICT', `reservation ${p.reservationId} is already confirmed`);
+      }
+      // A reservation becomes overdue only after the exact deadline.
+      if (Date.parse(command.occurredAt) > Date.parse(reservation.expiresAt)) {
+        throw new DomainError('GONE', `reservation ${p.reservationId} has expired`);
+      }
+      return [
+        {
+          type: 'ReservationConfirmed',
+          stream: `reservation-${p.reservationId}`,
+          payload: { reservationId: p.reservationId, slotId: reservation.slotId },
+        },
+      ];
+    }
+    case 'Sweep': {
+      SweepPayload.parse(command.payload);
+      const now = Date.parse(command.occurredAt);
+      return Object.values(state.reservations)
+        .filter(
+          (reservation) =>
+            reservation.status === 'pending' && now > Date.parse(reservation.expiresAt),
+        )
+        .map((reservation) => ({
+          type: 'ReservationExpired',
+          stream: `reservation-${reservation.id}`,
+          payload: { reservationId: reservation.id, slotId: reservation.slotId },
+        }));
     }
     default:
       throw new DomainError('VALIDATION', `unknown command type ${command.type}`);

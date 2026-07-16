@@ -1,5 +1,6 @@
 import {
   CandidateReadModelRepository,
+  ReservationReadModelRepository,
   SlotReadModelRepository,
   type StoredEvent,
 } from '@ats/persistence';
@@ -11,11 +12,15 @@ import { applyEvent, type ReadModelRepositories } from '../src/apply';
 // thing standing in for it.
 type CandidateRepo = ConstructorParameters<typeof CandidateReadModelRepository>[0];
 type SlotRepo = ConstructorParameters<typeof SlotReadModelRepository>[0];
+type ReservationRepo = ConstructorParameters<typeof ReservationReadModelRepository>[0];
 
 function setup(): ReadModelRepositories {
   return {
     candidateReadModel: new CandidateReadModelRepository({} as unknown as CandidateRepo),
     slotReadModel: new SlotReadModelRepository({} as unknown as SlotRepo),
+    reservationReadModel: new ReservationReadModelRepository(
+      {} as unknown as ReservationRepo,
+    ),
   };
 }
 

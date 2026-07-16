@@ -5,9 +5,13 @@ import {
   ScoreAssignedPayload,
   SlotOpenedPayload,
   StageChangedPayload,
+  ReservationPlacedPayload,
+  ReservationConfirmedPayload,
+  ReservationExpiredPayload,
 } from '@ats/contracts';
 import type {
   CandidateReadModelRepository,
+  ReservationReadModelRepository,
   SlotReadModelRepository,
   StoredEvent,
 } from '@ats/persistence';
@@ -16,6 +20,7 @@ import type {
 export interface ReadModelRepositories {
   candidateReadModel: CandidateReadModelRepository;
   slotReadModel: SlotReadModelRepository;
+  reservationReadModel: ReservationReadModelRepository;
 }
 
 // Applies one event to the read models (candidates_rm, slots_rm).
@@ -81,6 +86,26 @@ export async function applyEvent(
         payload.slotId,
         payload.candidateId,
       );
+      return;
+    }
+    case 'ReservationPlaced': {
+      const payload = ReservationPlacedPayload.parse(event.payload);
+      await repos.reservationReadModel.upsertOnPlace(
+        payload.reservationId,
+        payload.slotId,
+        payload.candidateId,
+        payload.expiresAt,
+      );
+      return;
+    }
+    case 'ReservationConfirmed': {
+      const payload = ReservationConfirmedPayload.parse(event.payload);
+      await repos.reservationReadModel.updateStatus(payload.reservationId, 'confirmed');
+      return;
+    }
+    case 'ReservationExpired': {
+      const payload = ReservationExpiredPayload.parse(event.payload);
+      await repos.reservationReadModel.updateStatus(payload.reservationId, 'expired');
       return;
     }
     default: {

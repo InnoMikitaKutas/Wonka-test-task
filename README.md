@@ -45,3 +45,10 @@ These are exactly the skills that separate an engineer who owns a system from so
 │   └── docs/{adr/, product-notes.md}
 └── evaluator/                       <- hidden test suite, detectors, rubric, seed generator
 ```
+
+## Example solution branches
+
+Two example solutions live on their own branches, both starting from this commit on `main`:
+
+- `solution/strong` - a clean solution that follows `docs/04-reference-walkthrough.md` and clears all nine landmines.
+- `solution/weak` - a deliberately careless solution that trips several landmines, kept as a contrast for calibrating the evaluator.

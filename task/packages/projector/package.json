@@ -1,0 +1,24 @@
+{
+  "name": "@ats/projector",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "project": "tsx src/index.ts --once",
+    "watch": "tsx src/index.ts --watch",
+    "test": "jest",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ats/contracts": "workspace:*",
+    "@ats/persistence": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.5",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2"
+  }
+}

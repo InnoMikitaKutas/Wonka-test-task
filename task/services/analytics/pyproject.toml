@@ -1,0 +1,40 @@
+[project]
+name = "ats-analytics"
+version = "0.1.0"
+description = "ATS analytics service: hiring funnel and timing metrics."
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi==0.115.6",
+    "uvicorn[standard]==0.34.0",
+    "psycopg[binary,pool]==3.2.3",
+    "pydantic==2.10.4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==8.3.4",
+    "httpx==0.28.1",
+    "ruff==0.8.4",
+    "mypy==1.14.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ANN"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+# Explicit Any in our own annotations is banned by ruff (ANN401). We do not
+# set disallow_any_explicit here: it false-positives on every pydantic model
+# (mypy synthesizes __dataclass_fields__: dict[str, Any] for BaseModel).
+warn_unused_ignores = true
+files = ["app", "tests"]

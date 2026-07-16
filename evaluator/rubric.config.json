@@ -1,0 +1,38 @@
+{
+  "weights": {
+    "functional": 40,
+    "landmines": {
+      "L1": 7,
+      "L2": 5,
+      "L3": 5,
+      "L4": 4,
+      "L5": 4,
+      "L6": 4,
+      "L7": 3,
+      "L8": 4,
+      "L9": 4
+    },
+    "process": {
+      "notes": 8,
+      "ambiguity": 6,
+      "commits": 6
+    }
+  },
+  "functional_breakdown": {
+    "criterion_1_reserve_conflict": 8,
+    "criterion_2_confirm_expiry": 6,
+    "criterion_3_sweep": 5,
+    "criterion_4_release_after_expiry": 5,
+    "criterion_5_concurrency": 6,
+    "criterion_6_analytics_health": 3,
+    "criterion_7_determinism": 5,
+    "criterion_8_full_suite": 2
+  },
+  "stretch": {
+    "S1": 4,
+    "S2": 4,
+    "max_bonus": 8
+  },
+  "recovery_rule": "On the defense call, a candidate who correctly explains a tripped landmine (what broke, why, and what the fix is) recovers up to 60% of its weight. A candidate who defends the broken code, or cannot read it, recovers nothing. Stretch-goal bonus points never offset tripped landmines: depth does not buy back discipline.",
+  "notes": "Weights are the starting point from docs/03-evaluation.md and are meant to be recalibrated over time in this file, not in detector code. functional_breakdown sums to the 'functional' weight above (40) and is deliberately weighted toward acceptance criteria 1-5 (core semantics and concurrency) and 7 (determinism), per docs/03. landmines and process sum to 40 and 20, so the base score is out of 100; stretch adds up to 8 bonus points on top."
+}

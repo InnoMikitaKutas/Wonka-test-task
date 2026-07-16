@@ -17,4 +17,4 @@ Working notes from the product side. Not a spec; kept here so that engineering d
 ## Funnel facts
 
 - Typical volume: 300-400 new applications per week; screening filters out about half.
-- The weekly report for the hiring team is built from the analytics service. If a number in the report looks off, check its `/health` first: the service lists event types it does not recognize instead of silently guessing.
+- The weekly report for the hiring team is built from the analytics service.

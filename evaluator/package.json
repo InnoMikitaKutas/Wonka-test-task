@@ -1,0 +1,23 @@
+{
+  "name": "@ats/evaluator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reviewer-side black-box evaluator for ATS take-home submissions. See docs/03-evaluation.md.",
+  "scripts": {
+    "run": "tsx src/run.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^22.10.5",
+    "eslint": "^9.39.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.64.0"
+  }
+}

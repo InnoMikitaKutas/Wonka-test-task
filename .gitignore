@@ -21,3 +21,8 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+
+# Evaluator run output (regenerated per run, not source)
+evaluator/report/work/
+evaluator/report/scorecard.json
+evaluator/report/scorecard.md

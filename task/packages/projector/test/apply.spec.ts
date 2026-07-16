@@ -140,6 +140,58 @@ describe('applyEvent', () => {
     expect(setScheduledCandidate).toHaveBeenCalledWith('s1', 'c1');
   });
 
+  it('ReservationPlaced records a pending reservation on the slot', async () => {
+    const repos = setup();
+    const placeReservation = jest
+      .spyOn(repos.slotReadModel, 'placeReservation')
+      .mockResolvedValue(undefined);
+
+    await applyEvent(
+      repos,
+      storedEvent('ReservationPlaced', {
+        reservationId: 'r1',
+        slotId: 's1',
+        candidateId: 'c1',
+        expiresAt: '2024-01-09T00:00:00.000Z',
+      }),
+    );
+
+    expect(placeReservation).toHaveBeenCalledWith(
+      's1',
+      'r1',
+      'c1',
+      '2024-01-09T00:00:00.000Z',
+    );
+  });
+
+  it('ReservationConfirmed updates only the matching slot reservation', async () => {
+    const repos = setup();
+    const confirmReservation = jest
+      .spyOn(repos.slotReadModel, 'confirmReservation')
+      .mockResolvedValue(undefined);
+
+    await applyEvent(repos, {
+      ...storedEvent('ReservationConfirmed', { reservationId: 'r1' }),
+      stream: 'slot-s1',
+    });
+
+    expect(confirmReservation).toHaveBeenCalledWith('s1', 'r1');
+  });
+
+  it('ReservationExpired updates only the matching slot reservation', async () => {
+    const repos = setup();
+    const expireReservation = jest
+      .spyOn(repos.slotReadModel, 'expireReservation')
+      .mockResolvedValue(undefined);
+
+    await applyEvent(repos, {
+      ...storedEvent('ReservationExpired', { reservationId: 'r1' }),
+      stream: 'slot-s1',
+    });
+
+    expect(expireReservation).toHaveBeenCalledWith('s1', 'r1');
+  });
+
   it('skips an unknown event type without throwing or touching a repository', async () => {
     const repos = setup();
     const upsert = jest.spyOn(repos.candidateReadModel, 'upsertOnApplication');

@@ -10,6 +10,9 @@ KNOWN_EVENT_TYPES: frozenset[str] = frozenset(
         "OfferExtended",
         "SlotOpened",
         "InterviewScheduled",
+        "ReservationPlaced",
+        "ReservationConfirmed",
+        "ReservationExpired",
     }
 )
 
@@ -59,6 +62,27 @@ class InterviewScheduledPayload(BaseModel):
 
     slotId: str
     candidateId: str
+
+
+class ReservationPlacedPayload(BaseModel):
+    """A candidate temporarily holds an interview slot."""
+
+    reservationId: str
+    slotId: str
+    candidateId: str
+    expiresAt: str
+
+
+class ReservationConfirmedPayload(BaseModel):
+    """A pending reservation was confirmed."""
+
+    reservationId: str
+
+
+class ReservationExpiredPayload(BaseModel):
+    """A pending reservation was released by a sweep."""
+
+    reservationId: str
 
 
 def is_known(event_type: str) -> bool:

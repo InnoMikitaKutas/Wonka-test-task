@@ -31,7 +31,8 @@ function toStoredEvent(row: EventEntity): StoredEvent {
     stream: row.stream,
     streamVersion: row.streamVersion,
     schemaVersion: row.schemaVersion,
-    occurredAt: row.occurredAt instanceof Date ? row.occurredAt.toISOString() : row.occurredAt,
+    occurredAt:
+      row.occurredAt instanceof Date ? row.occurredAt.toISOString() : row.occurredAt,
     type: row.type,
     payload: row.payload,
   };
@@ -66,7 +67,11 @@ export class EventStoreRepository {
     return result?.max ? Number(result.max) : 0;
   }
 
-  async append(stream: string, events: NewEvent[], expectedVersion: number): Promise<void> {
+  async append(
+    stream: string,
+    events: NewEvent[],
+    expectedVersion: number,
+  ): Promise<void> {
     try {
       await this.repo.manager.transaction(async (manager) => {
         // The jsonb payload column is typed unknown on the entity, which
@@ -95,12 +100,37 @@ export class EventStoreRepository {
   }
 
   async loadStreams(streams: string[]): Promise<StoredEvent[]> {
+    if (streams.length === 0) {
+      return [];
+    }
     const rows = await this.repo
       .createQueryBuilder('e')
       .where('e.stream IN (:...streams)', { streams })
       .orderBy('e.globalSeq', 'ASC')
       .getMany();
     return rows.map(toStoredEvent);
+  }
+
+  async loadByTypes(types: string[]): Promise<StoredEvent[]> {
+    if (types.length === 0) {
+      return [];
+    }
+    const rows = await this.repo
+      .createQueryBuilder('e')
+      .where('e.type IN (:...types)', { types })
+      .orderBy('e.globalSeq', 'ASC')
+      .getMany();
+    return rows.map(toStoredEvent);
+  }
+
+  async findReservationStream(reservationId: string): Promise<string | null> {
+    const row = await this.repo
+      .createQueryBuilder('e')
+      .where('e.type = :type', { type: 'ReservationPlaced' })
+      .andWhere("e.payload ->> 'reservationId' = :reservationId", { reservationId })
+      .orderBy('e.globalSeq', 'ASC')
+      .getOne();
+    return row?.stream ?? null;
   }
 
   async readAfter(afterSeq: string, limit: number): Promise<StoredEvent[]> {

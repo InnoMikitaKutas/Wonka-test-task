@@ -240,6 +240,7 @@ describe('CandidatesService.extendOffer', () => {
       storedEvent({
         type: 'StageChanged',
         stream: 'candidate-candidate-1',
+        streamVersion: 2,
         payload: { candidateId: 'candidate-1', fromStage: 1, toStage: 4 },
       }),
     ]);

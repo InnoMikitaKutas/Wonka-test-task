@@ -184,6 +184,10 @@ describe('SlotsService.getSlot', () => {
       interviewer: 'Grace Hopper',
       startsAt: new Date('2024-02-01T10:00:00.000Z'),
       scheduledCandidate: null,
+      reservationId: null,
+      reservationCandidate: null,
+      reservationStatus: null,
+      reservationExpiresAt: null,
     };
     jest.spyOn(slotReadModel, 'findById').mockResolvedValue(entity);
 

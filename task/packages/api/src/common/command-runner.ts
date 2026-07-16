@@ -1,4 +1,4 @@
-import type { CommandEnvelope, EventEnvelope } from '@ats/contracts';
+import type { CommandEnvelope, EventDraft, EventEnvelope } from '@ats/contracts';
 import { decide, initialState, reduce } from '@ats/engine';
 import type { EventStoreRepository, NewEvent, StoredEvent } from '@ats/persistence';
 import type { IdGenerator } from './id.service';
@@ -28,14 +28,18 @@ export async function runCommand(
   command: CommandEnvelope,
   readStreams: string[],
   targetStream: string,
-): Promise<void> {
+): Promise<EventDraft[]> {
   const stored = await eventStore.loadStreams(readStreams);
   const state = stored.reduce(
     (acc, event) => reduce(acc, toEventEnvelope(event)),
     initialState(),
   );
   const drafts = decide(state, command);
-  const expectedVersion = await eventStore.currentVersion(targetStream);
+  // The expected version must come from the same snapshot used by decide.
+  // Reading it again after the decision would reopen a check-then-act race.
+  const expectedVersion = stored
+    .filter((event) => event.stream === targetStream)
+    .reduce((max, event) => Math.max(max, event.streamVersion), 0);
   const events: NewEvent[] = drafts.map((draft) => ({
     eventId: idGenerator.next(),
     type: draft.type,
@@ -43,4 +47,5 @@ export async function runCommand(
     occurredAt: command.occurredAt,
   }));
   await eventStore.append(targetStream, events, expectedVersion);
+  return drafts;
 }

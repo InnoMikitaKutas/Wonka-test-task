@@ -21,4 +21,41 @@ export class SlotReadModelRepository {
   async setScheduledCandidate(id: string, candidateId: string): Promise<void> {
     await this.repo.update({ id }, { scheduledCandidate: candidateId });
   }
+
+  async placeReservation(
+    slotId: string,
+    reservationId: string,
+    candidateId: string,
+    expiresAt: string,
+  ): Promise<void> {
+    await this.repo.update(
+      { id: slotId },
+      {
+        reservationId,
+        reservationCandidate: candidateId,
+        reservationStatus: 'pending',
+        reservationExpiresAt: new Date(expiresAt),
+      },
+    );
+  }
+
+  async confirmReservation(slotId: string, reservationId: string): Promise<void> {
+    await this.repo
+      .createQueryBuilder()
+      .update(SlotReadModelEntity)
+      .set({ reservationStatus: 'confirmed' })
+      .where('id = :slotId', { slotId })
+      .andWhere('reservation_id = :reservationId', { reservationId })
+      .execute();
+  }
+
+  async expireReservation(slotId: string, reservationId: string): Promise<void> {
+    await this.repo
+      .createQueryBuilder()
+      .update(SlotReadModelEntity)
+      .set({ reservationStatus: 'expired' })
+      .where('id = :slotId', { slotId })
+      .andWhere('reservation_id = :reservationId', { reservationId })
+      .execute();
+  }
 }

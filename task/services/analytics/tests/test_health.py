@@ -50,6 +50,9 @@ def test_only_known_event_types_gives_empty_ignored_list(
             {"type": "OfferExtended"},
             {"type": "SlotOpened"},
             {"type": "InterviewScheduled"},
+            {"type": "ReservationPlaced"},
+            {"type": "ReservationConfirmed"},
+            {"type": "ReservationExpired"},
         ]
 
     monkeypatch.setattr(db, "fetch_all", fake_fetch_all)
@@ -66,6 +69,9 @@ def test_only_known_event_types_gives_empty_ignored_list(
             "OfferExtended",
             "SlotOpened",
             "InterviewScheduled",
+            "ReservationPlaced",
+            "ReservationConfirmed",
+            "ReservationExpired",
         ]
     )
 

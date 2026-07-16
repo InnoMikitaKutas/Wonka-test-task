@@ -2,6 +2,9 @@ import {
   ApplicationReceivedPayload,
   InterviewScheduledPayload,
   OfferExtendedPayload,
+  ReservationConfirmedPayload,
+  ReservationExpiredPayload,
+  ReservationPlacedPayload,
   ScoreAssignedPayload,
   SlotOpenedPayload,
   StageChangedPayload,
@@ -81,6 +84,28 @@ export async function applyEvent(
         payload.slotId,
         payload.candidateId,
       );
+      return;
+    }
+    case 'ReservationPlaced': {
+      const payload = ReservationPlacedPayload.parse(event.payload);
+      await repos.slotReadModel.placeReservation(
+        payload.slotId,
+        payload.reservationId,
+        payload.candidateId,
+        payload.expiresAt,
+      );
+      return;
+    }
+    case 'ReservationConfirmed': {
+      const payload = ReservationConfirmedPayload.parse(event.payload);
+      const slotId = event.stream.replace(/^slot-/, '');
+      await repos.slotReadModel.confirmReservation(slotId, payload.reservationId);
+      return;
+    }
+    case 'ReservationExpired': {
+      const payload = ReservationExpiredPayload.parse(event.payload);
+      const slotId = event.stream.replace(/^slot-/, '');
+      await repos.slotReadModel.expireReservation(slotId, payload.reservationId);
       return;
     }
     default: {

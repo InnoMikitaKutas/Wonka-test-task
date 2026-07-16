@@ -38,6 +38,18 @@ describe('registry.parseEventLine', () => {
       { slotId: 's1', interviewer: 'carol', startsAt: '2024-01-15T10:00:00.000Z' },
     ],
     ['InterviewScheduled', 'slot-s1', { slotId: 's1', candidateId: 'c1' }],
+    [
+      'ReservationPlaced',
+      'slot-s1',
+      {
+        reservationId: 'r1',
+        slotId: 's1',
+        candidateId: 'c1',
+        expiresAt: '2024-01-09T09:00:00.000Z',
+      },
+    ],
+    ['ReservationConfirmed', 'slot-s1', { reservationId: 'r1' }],
+    ['ReservationExpired', 'slot-s1', { reservationId: 'r1' }],
   ];
 
   it.each(samples)('round-trips a valid %s', (type, stream, payload) => {

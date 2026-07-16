@@ -3,6 +3,9 @@ import type {
   EventEnvelope,
   InterviewScheduled,
   OfferExtended,
+  ReservationConfirmed,
+  ReservationExpired,
+  ReservationPlaced,
   ScoreAssigned,
   SlotOpened,
   StageChanged,
@@ -88,6 +91,51 @@ export function reduce(state: State, envelope: EventEnvelope): State {
         slots: {
           ...state.slots,
           [p.slotId]: { ...slot, scheduledCandidateId: p.candidateId },
+        },
+      };
+    }
+    case 'ReservationPlaced': {
+      const p = envelope.payload as ReservationPlaced;
+      return {
+        ...state,
+        reservations: {
+          ...(state.reservations ?? {}),
+          [p.reservationId]: {
+            id: p.reservationId,
+            slotId: p.slotId,
+            candidateId: p.candidateId,
+            reservedAt: envelope.occurredAt,
+            expiresAt: p.expiresAt,
+            status: 'pending',
+          },
+        },
+      };
+    }
+    case 'ReservationConfirmed': {
+      const p = envelope.payload as ReservationConfirmed;
+      const reservation = state.reservations?.[p.reservationId];
+      if (!reservation) {
+        throw new DomainError('VALIDATION', `reservation ${p.reservationId} not found`);
+      }
+      return {
+        ...state,
+        reservations: {
+          ...(state.reservations ?? {}),
+          [p.reservationId]: { ...reservation, status: 'confirmed' },
+        },
+      };
+    }
+    case 'ReservationExpired': {
+      const p = envelope.payload as ReservationExpired;
+      const reservation = state.reservations?.[p.reservationId];
+      if (!reservation) {
+        throw new DomainError('VALIDATION', `reservation ${p.reservationId} not found`);
+      }
+      return {
+        ...state,
+        reservations: {
+          ...(state.reservations ?? {}),
+          [p.reservationId]: { ...reservation, status: 'expired' },
         },
       };
     }

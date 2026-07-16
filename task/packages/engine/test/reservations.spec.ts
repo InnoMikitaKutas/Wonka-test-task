@@ -34,7 +34,12 @@ interface ConfirmReservationCommand {
 interface ReservationPlacedDraft {
   type: 'ReservationPlaced';
   stream: string;
-  payload: { reservationId: string; slotId: string; candidateId: string; expiresAt: string };
+  payload: {
+    reservationId: string;
+    slotId: string;
+    candidateId: string;
+    expiresAt: string;
+  };
 }
 
 interface ReservationExpiredDraft {
@@ -45,7 +50,7 @@ interface ReservationExpiredDraft {
 
 type FutureDecide<Cmd, Draft> = (state: State, command: Cmd) => Draft[];
 
-describe.skip('reservations (WIP)', () => {
+describe('reservations', () => {
   it('expires a pending reservation exactly at its expiresAt boundary', () => {
     const state: State = initialState();
 

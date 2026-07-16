@@ -38,6 +38,7 @@ These are exactly the skills that separate an engineer who owns a system from so
 │   ├── 03-evaluation.md             <- evaluator design, scoring rubric, defense call flow
 │   └── 04-reference-walkthrough.md  <- how I would pass this take-home assignment, step by step
 ├── task/                            <- the monorepo the candidate works in
+│   ├── README.md                                   <- how to run it, basic info
 │   ├── packages/{contracts,engine,api,projector}   (TypeScript / Node)
 │   ├── services/analytics                          (Python / FastAPI)
 │   ├── tools/replay                                (TypeScript CLI)
@@ -45,6 +46,8 @@ These are exactly the skills that separate an engineer who owns a system from so
 │   └── docs/{adr/, product-notes.md}
 └── evaluator/                       <- hidden test suite, detectors, rubric, seed generator
 ```
+
+See [task/README.md](task/README.md) for how to run the monorepo and a short tour of the codebase.
 
 ## Example solution branches
 

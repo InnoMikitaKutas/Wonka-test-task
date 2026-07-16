@@ -23,7 +23,7 @@ These are exactly the skills that separate an engineer who owns a system from so
 
 ## How it works
 
-- **The task:** implement interview slot reservations with auto-expiry in a small applicant tracking system (ATS). The system is an event-sourced monorepo: NestJS API, pure TypeScript domain engine, a projector, a replay CLI, and a FastAPI analytics service.
+- **[The task](docs/01-assignment.md):** implement interview slot reservations with auto-expiry in a small applicant tracking system (ATS). The system is an event-sourced monorepo: NestJS API, pure TypeScript domain engine, a projector, a replay CLI, and a FastAPI analytics service.
 - **The landmines:** determinism, event immutability, per-aggregate ordering, race-safe writes under concurrency, legacy compatibility that looks wrong but is right, scope discipline, one planted spec contradiction, a half-finished decoy module, and cross-language contract drift. Each one is documented inside the repo, so the task stays fair.
 - **The verification:** a private evaluator produces a structured scorecard. Every tripped landmine becomes an agenda item for the defense call, where the candidate can win points back by explaining what went wrong. A structured rubric instead of gut feeling.
 

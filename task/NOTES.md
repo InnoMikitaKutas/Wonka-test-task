@@ -34,6 +34,11 @@ v1 behavior, legacy stage indexes, or decimal-string scores.
 
 I used an AI coding agent for repository reconnaissance, implementation, and test
 iteration, and reviewed every resulting diff against the ADRs and acceptance criteria.
-The final verification record will include the historical replay hash, deterministic
-extended replay, build/typecheck/lint/tests, analytics health, projector redelivery,
-and a real parallel-reservation probe.
+Verification completed with the following results:
+
+- untouched fixture replay twice: `sha256:c61ab259e00b34a6335ce015eaf142ef134e4e904c4d6a86f311eb137965119a`;
+- reservation-event replay twice: `sha256:86922afad3def89d8dbfb0afcfb6ada644230d6f5e9c35d6dbf4412f7403e325`;
+- build, workspace typecheck, ESLint, Node tests, and Python pytest/ruff/mypy: green;
+- analytics `/health`: `ignored_event_types` is empty after reservation events;
+- forced projector redelivery: identical slot read-model checksum before and after;
+- ten parallel reserves of one slot: exactly one `201` and nine `409` responses.

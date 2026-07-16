@@ -126,10 +126,6 @@ export function decide(state: State, command: CommandEnvelope): EventDraft[] {
     }
     case 'ReserveSlot': {
       const p = ReserveSlotPayload.parse(command.payload);
-      const slot = state.slots[p.slotId];
-      if (slot?.scheduledCandidateId) {
-        throw new DomainError('CONFLICT', `slot ${p.slotId} is already scheduled`);
-      }
       if (state.reservations?.[p.reservationId]) {
         throw new DomainError(
           'CONFLICT',

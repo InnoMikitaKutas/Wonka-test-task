@@ -1,15 +1,11 @@
-// Holds / reservations. WIP tests left by D. before he left the team.
-// Re-enable when reservations ship. See docs/product-notes.md.
+// Holds / reservations. Boundary tests left by D. and enabled with the feature.
 import type { EventEnvelope } from '@ats/contracts';
 import { decide, DomainError, initialState, reduce, type State } from '../src';
 
 const T0 = '2024-01-08T09:00:00.000Z';
 
-// The engine does not implement reservations yet. These local interfaces
-// describe the commands and event drafts we expect it to grow, and
-// FutureDecide is a typed stand-in for decide() once it accepts them.
-// Casting through these keeps the file free of `any` while it stays
-// skipped, with nothing here to type-check against the real engine.
+// Narrow test interfaces keep each scenario focused on the command and
+// draft shapes it exercises.
 interface ReserveSlotCommand {
   commandId: string;
   type: 'ReserveSlot';
@@ -94,6 +90,17 @@ describe('reservations', () => {
       payload: {},
     });
     expect(sweepDrafts.some((d) => d.type === 'ReservationExpired')).toBe(true);
+
+    // Expiry is derived from the incoming envelope time, so the slot is
+    // immediately reusable at the boundary even before a sweep is projected.
+    const replacement = placeReservation(afterPlace, {
+      commandId: '66666666-6666-4666-8666-666666666666',
+      type: 'ReserveSlot',
+      occurredAt: expiresAt,
+      payload: { reservationId: 'r2', slotId: 's1', candidateId: 'c2' },
+    });
+    expect(replacement).toHaveLength(1);
+    expect(replacement[0].payload.reservationId).toBe('r2');
   });
 
   it('rejects confirming an expired reservation', () => {
